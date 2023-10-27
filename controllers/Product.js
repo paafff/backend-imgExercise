@@ -86,8 +86,19 @@ const updateProduct = async (req, res) => {
     const { name, price } = req.body;
 
     try {
-      const imgFilesOneFilename = req.files['imageOne'][0].filename;
-      const imgFilesTwoFilename = req.files['imageTwo'][0].filename;
+      if (req.files['imageOne']) {
+        fs.unlinkSync(`./uploads/images/${findProduct.image_name1}`);
+      }
+      if (req.files['imageTwo']) {
+        fs.unlinkSync(`./uploads/images/${findProduct.image_name2}`);
+      }
+
+      const imgFilesOneFilename = req.files['imageOne']
+        ? req.files['imageOne'][0].filename
+        : findProduct.image_name1;
+      const imgFilesTwoFilename = req.files['imageTwo']
+        ? req.files['imageTwo'][0].filename
+        : findProduct.image_name2;
 
       const imgFilesOneURL = `http://localhost:5000/images/${imgFilesOneFilename}`;
       const imgFilesTwoURL = `http://localhost:5000/images/${imgFilesTwoFilename}`;
@@ -146,4 +157,31 @@ const deleteProduct = async (req, res) => {
   }
 };
 
-module.exports = { createProduct, deleteProduct };
+const getProducts = async (req, res) => {
+  try {
+    const findProducts = await prisma.product.findMany();
+
+    res.status(200).json(findProducts);
+  } catch (error) {
+    res.status(500).json({ msg: error.message });
+  }
+};
+
+const getProductById = async (req, res) => {
+  try {
+    findProduct = await prisma.product.findUnique({
+      where: { uuid: req.params.uuid },
+    });
+    res.status(200).json(findProduct);
+  } catch (error) {
+    res.status(500).json({ msg: error.message });
+  }
+};
+
+module.exports = {
+  createProduct,
+  deleteProduct,
+  updateProduct,
+  getProductById,
+  getProducts,
+};
