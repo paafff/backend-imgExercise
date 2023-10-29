@@ -47,7 +47,7 @@ const createProduct = (req, res) => {
       await prisma.product.create({
         data: {
           name: name,
-          price: price,
+          price: Number(price),
           image_name1: imgFilesOneFilename,
           image_name2: imgFilesTwoFilename,
           image_url1: imgFilesOneURL,
@@ -107,7 +107,7 @@ const updateProduct = async (req, res) => {
         where: { uuid: req.params.uuid },
         data: {
           name: name || undefined,
-          price: price || undefined,
+          price: Number(price) || undefined,
           image_name1: imgFilesOneFilename || undefined,
           image_name2: imgFilesTwoFilename || undefined,
           image_url1: imgFilesOneURL || undefined,
